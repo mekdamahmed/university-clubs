@@ -32,11 +32,11 @@ Follow these steps to run the project locally:
 4. **Install Dependencies:**
    Open your terminal in the project directory and run:
    ```bash
-   composer install```
+   composer install
 
 5. Environment Configuration:
     Copy the example .env file:
-    ```cp .env.example .env```
+    ```cp .env.example .env
 
    Open the `.env` file and ensure the database credentials are correct:
    ```env
@@ -45,12 +45,14 @@ Follow these steps to run the project locally:
    DB_PORT=3306
    DB_DATABASE=club_management
    DB_USERNAME=root
-   DB_PASSWORD=```
+   DB_PASSWORD=
 
 6.  Generate App Key & Migrate Database:
     Run the following commands to secure the app and build the tables:
-    ```bash php artisan key:generate 
-    php artisan migrate:fresh```
+    ```bash 
+    php artisan key:generate 
+    php artisan migrate:fresh
 
 7. Run the Application:
-   ```bash php artisan serve```
+   ```bash
+    php artisan serve
