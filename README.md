@@ -36,8 +36,7 @@ Follow these steps to run the project locally:
 
 5. Environment Configuration:
     Copy the example .env file:
-    ```cp 
-    .env.example .env
+    ```cp .env.example .env
 
    Open the `.env` file and ensure the database credentials are correct:
    ```env
