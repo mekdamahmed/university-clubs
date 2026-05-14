@@ -1,6 +1,5 @@
-# 📡 RESTful API Documentation
+# RESTful API Documentation
 
-This document outlines the available API endpoints for the University Clubs Management System. 
 
 > **🔐 Authentication:** All endpoints (except Register/Login) require a Bearer Token provided by Laravel Sanctum. Include `Authorization: Bearer <your_token>` in the request header.
 
