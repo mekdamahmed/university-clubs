@@ -14,7 +14,6 @@ class ClubController extends Controller
     public function index(Request $request)
     {
         $clubs = Club::with('leader')->get()->map(function ($club) use ($request) {
-            // Determine user status for the frontend (to hide/show buttons)
             $status = 'none';
             if ($request->user()) {
                 if ($club->leader_id === $request->user()->id) { $status = 'leader'; }
@@ -42,7 +41,7 @@ class ClubController extends Controller
         return $this->successResponse($club, 'Club created successfully', 201);
     }
 
-    // New: Admin change club leader
+
     public function update(Request $request, $id)
     {
         $request->validate(['leader_id' => 'required|exists:users,id']);
@@ -64,24 +63,39 @@ class ClubController extends Controller
         $club->members()->attach($user->id, ['status' => 'pending']);
         return $this->successResponse(null, 'Application sent successfully');
     }
-    // Get clubs that the current user has officially joined
+
     public function myClubs(Request $request)
     {
         $user = $request->user();
         
-        // جلب النوادي التي هو عضو فيها
         $memberClubs = $user->clubs()->wherePivot('status', 'approved')->withPivot('joined_at')->get();
         
-        // جلب النوادي التي هو ليدر فيها
         $ledClubs = $user->ledClubs()->get()->map(function($club) {
-            $club->pivot = (object) ['joined_at' => $club->created_at]; // بيانات وهمية لتطابق الواجهة
+            $club->pivot = (object) ['joined_at' => $club->created_at]; 
             $club->is_leader_badge = true; 
             return $club;
         });
 
-        // دمج القائمتين
         $allClubs = $memberClubs->merge($ledClubs)->unique('id')->values();
 
         return $this->successResponse($allClubs, 'My clubs retrieved');
+    }
+    
+
+
+
+
+    public function destroy($id)
+    {
+        $club = \App\Models\Club::findOrFail($id);
+        $club->delete(); 
+        return $this->successResponse(null, 'Club deleted successfully');
+    }
+
+    public function restore($id)
+    {
+        $club = \App\Models\Club::withTrashed()->findOrFail($id);
+        $club->restore();
+        return $this->successResponse(null, 'Club restored successfully');
     }
 }

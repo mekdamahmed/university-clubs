@@ -7,17 +7,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Club extends Model
 {
-    use SoftDeletes; // Enables soft delete
+    use SoftDeletes; 
 
     protected $fillable = ['name', 'description', 'leader_id'];
 
-    // The leader of the club
     public function leader()
     {
         return $this->belongsTo(User::class, 'leader_id');
     }
 
-    // All members (including pending ones)
     public function members()
     {
         return $this->belongsToMany(User::class, 'club_user')

@@ -15,9 +15,8 @@ public function up(): void
         $table->id();
         $table->string('name');
         $table->text('description')->nullable();
-        // The leader of the club
         $table->foreignId('leader_id')->constrained('users')->onDelete('cascade');
-        $table->softDeletes(); 
+        $table->softDeletes();
         $table->timestamps();
     });
 }

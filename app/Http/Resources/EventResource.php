@@ -15,7 +15,6 @@ class EventResource extends JsonResource
             'description' => $this->description,
             'event_date' => $this->event_date,
             'club_name' => $this->club->name,
-            // Check if event is in the past (Archived)
             'is_archived' => \Carbon\Carbon::parse($this->event_date)->isPast(),
         ];
     }

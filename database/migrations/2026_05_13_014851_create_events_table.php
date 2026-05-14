@@ -17,7 +17,7 @@ public function up(): void
             $table->string('title');
             $table->text('description');
             $table->dateTime('event_date');
-            $table->string('location')->nullable(); // Add location field
+            $table->string('location')->nullable(); 
             $table->softDeletes();
             $table->timestamps();
         });

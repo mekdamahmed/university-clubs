@@ -24,7 +24,6 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     } catch (e) { return { status: 500, data: { message: "Server Error" } }; }
 }
 
-// Auth
 document.getElementById('register-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const res = await apiCall('/register', 'POST', { name: document.getElementById('reg-name').value, email: document.getElementById('reg-email').value, password: document.getElementById('reg-password').value });
@@ -56,7 +55,7 @@ function showDashboard() {
     }
 }
 
-// Announcements & Admin (Same as before)
+// Announcements & Admin
 async function loadAnnouncements() {
     const res = await apiCall('/announcements');
     if (res.status === 200) {
@@ -81,10 +80,30 @@ async function loadAdminClubs() {
         const tbody = document.getElementById('admin-clubs-list'); tbody.innerHTML = '';
         res.data.data.forEach(club => {
             const isDeleted = club.deleted_at !== null;
-            const actionBtn = isDeleted ? `<button onclick="apiCall('/admin/clubs/${club.id}/restore', 'POST').then(()=>loadAdminClubs())" class="btn btn-warning btn-sm">Restore</button>` : `<button onclick="apiCall('/admin/clubs/${club.id}', 'DELETE').then(()=>loadAdminClubs())" class="btn btn-danger btn-sm">Delete</button>`;
-            tbody.innerHTML += `<tr style="${isDeleted ? 'background-color: #ffe6e6;' : ''}"><td>${club.name}</td><td><input type="number" id="change-leader-${club.id}" value="${club.leader_id}" style="width:50px;"><button onclick="changeLeader(${club.id})" class="btn btn-warning btn-sm">Change</button></td><td>${actionBtn} ${!isDeleted ? `<button onclick="openManageClub(${club.id}, '${club.name}')" class="btn btn-success btn-sm">Enter</button>` : ''}</td></tr>`;
+            const actionBtn = isDeleted 
+                ? `<button onclick="restoreClub(${club.id})" class="btn btn-warning btn-sm">Restore</button>` 
+                : `<button onclick="deleteClub(${club.id})" class="btn btn-danger btn-sm">Delete</button>`;
+            
+            tbody.innerHTML += `<tr style="${isDeleted ? 'background-color: #ffe6e6;' : ''}">
+                <td>${club.name}</td>
+                <td><input type="number" id="change-leader-${club.id}" value="${club.leader_id}" style="width:50px;">
+                <button onclick="changeLeader(${club.id})" class="btn btn-warning btn-sm">Change</button></td>
+                <td>${actionBtn} ${!isDeleted ? `<button onclick="openManageClub(${club.id}, '${club.name}')" class="btn btn-success btn-sm">Enter</button>` : ''}</td>
+            </tr>`;
         });
     }
+}
+
+async function deleteClub(id) {
+    if(confirm('Are you sure you want to delete this club?')) {
+        await apiCall(`/admin/clubs/${id}`, 'DELETE');
+        loadAdminClubs(); loadPublicClubs();
+    }
+}
+
+async function restoreClub(id) {
+    await apiCall(`/admin/clubs/${id}/restore`, 'POST');
+    loadAdminClubs(); loadPublicClubs();
 }
 document.getElementById('create-club-form').addEventListener('submit', async (e) => {
     e.preventDefault(); await apiCall('/admin/clubs', 'POST', { name: document.getElementById('new-club-name').value, description: document.getElementById('new-club-desc').value, leader_id: document.getElementById('leader-select').value });
@@ -103,7 +122,6 @@ async function loadPublicClubs() {
             if (club.user_status === 'leader') {
                 actionHtml = `<span class="badge bg-leader">You lead this club</span>`;
                 if (!userLeadsAClub && !currentUser.is_admin) { openManageClub(club.id, club.name); userLeadsAClub = true; }
-                // زر دائم للتبديل السريع بين لوحات النوادي التي يديرها
                 actionHtml += `<br><button onclick="openManageClub(${club.id}, '${club.name}')" class="btn btn-warning btn-sm mt-10" style="width:100%;">⚙️ Manage This Club</button>`;
             } else if (club.user_status === 'approved') { actionHtml = `<span class="badge bg-approved">Active Member</span>`; } 
             else if (club.user_status === 'pending') { actionHtml = `<span class="badge bg-pending">Pending...</span>`; } 
@@ -114,7 +132,7 @@ async function loadPublicClubs() {
     }
 }
 
-// Leader Dashboard (Stats & Tasks Deadlines)
+// Leader Dashboard 
 function openManageClub(clubId, clubName) {
     document.getElementById('leader-view').classList.remove('hidden');
     document.getElementById('manage-club-title').innerText = `⭐ Managing: ${clubName}`;
@@ -133,7 +151,6 @@ async function loadLeaderMembers(clubId) {
         approvedTbody.innerHTML = ''; 
         taskSelect.innerHTML = '<option value="">-- Select Member --</option>';
 
-        // 1. طباعة الطلبات المعلقة
         res.data.data.pending_requests.forEach(u => {
             pendingTbody.innerHTML += `<tr>
                 <td><strong>ID: ${u.id}</strong></td>
@@ -145,7 +162,6 @@ async function loadLeaderMembers(clubId) {
             </tr>`;
         });
 
-        // 2. طباعة الليدر في أعلى القائمة بشكل مميز
         const leader = res.data.data.leader;
         if (leader) {
             approvedTbody.innerHTML += `<tr style="background-color: #fcf3ff;">
@@ -156,13 +172,10 @@ async function loadLeaderMembers(clubId) {
                 <td style="color:red; font-weight:bold;">${leader.absences || 0}</td>
                 <td><span style="color:gray; font-size:12px; font-style:italic;">Leader (Cannot Kick)</span></td>
             </tr>`;
-            // إضافة الليدر لقائمة التاسكات ليتمكن من إعطاء مهمة لنفسه
             taskSelect.innerHTML += `<option value="${leader.id}">${leader.name} (Leader)</option>`;
         }
 
-        // 3. طباعة باقي الأعضاء
         res.data.data.approved_members.forEach(u => {
-            // منع تكرار طباعة الليدر إذا كان موجوداً بالخطأ في جدول الأعضاء العاديين
             if (leader && u.id === leader.id) return;
 
             approvedTbody.innerHTML += `<tr>
@@ -214,7 +227,6 @@ async function loadMyTasks() {
             let badge = task.status_label === 'Completed' ? '<span class="badge bg-approved">Completed</span>' : 
                         (task.status_label === 'Failed' ? '<span class="badge bg-failed">Failed</span>' : '<span class="badge bg-pending">Pending</span>');
             let action = task.status_label === 'Pending' ? `<button onclick="completeTask(${task.id})" class="btn btn-success btn-sm">Mark Done</button>` : '';
-            // عرض اسم النادي في العمود الجديد
             tbody.innerHTML += `<tr><td>${task.title}</td><td><b>${task.club.name}</b></td><td>${task.due_date}</td><td>${badge}</td><td>${action}</td></tr>`;
         });
     } else {
@@ -226,7 +238,7 @@ async function completeTask(id) {
     if(res.status === 200) { loadMyTasks(); } else { alert(res.data.message); }
 }
 
-// Events & Organized Attendance
+// Events & Attendance
 document.getElementById('create-event-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     await apiCall('/events', 'POST', { club_id: document.getElementById('current-managing-club').value, title: document.getElementById('event-title').value, description: 'Event', event_date: document.getElementById('event-date').value, location: document.getElementById('event-location').value });
@@ -285,11 +297,11 @@ async function openAttendance(eventId) {
 }
 async function markAttendance(eventId, userId, status) {
     await apiCall(`/events/${eventId}/attendance`, 'POST', {user_id: userId, status: status});
-    openAttendance(eventId); // Refresh modal logic instantly
-    loadLeaderMembers(document.getElementById('current-managing-club').value); // Update absences count in background
+    openAttendance(eventId); 
+    loadLeaderMembers(document.getElementById('current-managing-club').value); 
 }
 
-// New Feature: Load My Official Clubs
+
 async function loadMyClubs() {
     const res = await apiCall('/my-clubs');
     if (res.status === 200 && res.data.data.length > 0) {
@@ -298,7 +310,6 @@ async function loadMyClubs() {
         list.innerHTML = '';
         res.data.data.forEach(club => {
             let joinDate = club.pivot && club.pivot.joined_at ? club.pivot.joined_at.split('T')[0] : 'Unknown';
-            // إضافة شعار مميز إذا كان هو الليدر
             let leaderBadge = club.is_leader_badge ? `<span class="badge bg-leader" style="float:right;">👑 Leader</span>` : '';
             list.innerHTML += `
                 <div class="card" style="border: 1px solid #27ae60;">

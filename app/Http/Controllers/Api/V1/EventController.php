@@ -14,21 +14,18 @@ class EventController extends Controller
 
     public function index()
     {
-        // عرض الأحداث القادمة فقط
         $events = Event::with('club')->where('event_date', '>=', now())->orderBy('event_date')->get();
         return $this->successResponse($events);
     }
 
     public function archived(Request $request)
     {
-        // جلب الأحداث التي انتهى وقتها "أو" التي تم حذفها يدوياً (Soft Delete)
         $query = Event::withTrashed()->with('club')
             ->where(function($q) {
                 $q->where('event_date', '<', now())
                   ->orWhereNotNull('deleted_at');
             });
 
-        // فلترة الأحداث بناءً على النادي (لكي لا يرى الليدر أحداث النوادي الأخرى)
         if ($request->has('club_id')) {
             $query->where('club_id', $request->club_id);
         }
@@ -47,11 +44,10 @@ class EventController extends Controller
         return $this->successResponse($event, 'Event created', 201);
     }
 
-    // إضافة وظيفة الحذف (الأرشفة اليدوية)
     public function destroy($id)
     {
         $event = Event::findOrFail($id);
-        $event->delete(); // Soft Delete: ينقله للأرشيف
+        $event->delete(); 
         return $this->successResponse(null, 'Event deleted and archived successfully');
     }
 

@@ -11,14 +11,12 @@ class AnnouncementController extends Controller
 {
     use ApiResponse;
 
-    // View all announcements
     public function index()
     {
         $announcements = Announcement::with(['club', 'author'])->latest()->get();
         return $this->successResponse($announcements);
     }
 
-    // Leader: Create announcement
     public function store(Request $request)
     {
         $request->validate([

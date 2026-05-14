@@ -27,7 +27,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/my-tasks', [TaskController::class, 'myTasks']);
         Route::post('/tasks/{id}/complete', [TaskController::class, 'complete']);
 
-        // Admin & Leader Routes (Protected by Gates inside controllers/providers)
+        // Admin & Leader Routes
         Route::get('/admin/stats', [AdminController::class, 'stats']);
         Route::get('/admin/clubs/all', [ClubController::class, 'adminIndex']);
         Route::post('/admin/clubs', [ClubController::class, 'store']);
@@ -39,14 +39,18 @@ Route::prefix('v1')->group(function () {
         Route::post('/clubs/{id}/members/{user_id}/kick', [MemberController::class, 'kick']);
         
         Route::post('/events', [EventController::class, 'store']);
-        Route::delete('/events/{id}', [EventController::class, 'destroy']); // <-- أضف هذا السطر
+        Route::delete('/events/{id}', [EventController::class, 'destroy']); 
         Route::get('/events/{id}/attendance', [EventController::class, 'getAttendance']);
         Route::post('/events/{id}/attendance', [EventController::class, 'takeAttendance']);
 
-        Route::get('/clubs/{id}/tasks', [TaskController::class, 'clubTasks']); // Leader view tasks
+        Route::get('/clubs/{id}/tasks', [TaskController::class, 'clubTasks']); 
         Route::post('/tasks', [TaskController::class, 'store']);
 
         Route::get('/announcements', [AnnouncementController::class, 'index']);
         Route::post('/announcements', [AnnouncementController::class, 'store']);
+
+
+        Route::delete('/admin/clubs/{id}', [ClubController::class, 'destroy']);
+        Route::post('/admin/clubs/{id}/restore', [ClubController::class, 'restore']);
     });
 });

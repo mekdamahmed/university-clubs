@@ -15,9 +15,7 @@ public function up(): void
         $table->id();
         $table->foreignId('club_id')->constrained()->onDelete('cascade');
         $table->foreignId('user_id')->constrained()->onDelete('cascade');
-        // Status can be pending or approved
         $table->enum('status', ['pending', 'approved'])->default('pending');
-        // To track when they were officially added
         $table->timestamp('joined_at')->nullable(); 
         $table->timestamps();
     });

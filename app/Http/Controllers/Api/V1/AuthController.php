@@ -16,14 +16,12 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
-            // تحقق صارم
             $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:6',
             ]);
 
-            // إنشاء المستخدم في الداتا بيز
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -31,10 +29,8 @@ class AuthController extends Controller
                 'is_admin' => false 
             ]);
 
-            // إنشاء التوكن
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            // إرجاع الرد
             return $this->successResponse([
                 'user' => $user,
                 'token' => $token

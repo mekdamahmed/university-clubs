@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Event extends Model
 {
-    use SoftDeletes; // Allows archiving past events or soft deleting them
+    use SoftDeletes; 
 
 protected $fillable = ['club_id', 'title', 'description', 'event_date', 'location'];
     public function club()

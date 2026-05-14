@@ -11,13 +11,12 @@ use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
-    use ApiResponse; // استخدام التنسيق الموحد
+    use ApiResponse; 
 
     public function stats(Request $request)
     {
         $clubsCount = Club::count();
         $eventsCount = Event::count();
-        // حساب الأعضاء النشطين فقط
         $activeMembers = DB::table('club_user')->where('status', 'approved')->distinct('user_id')->count();
 
         return $this->successResponse([

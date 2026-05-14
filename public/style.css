@@ -2,7 +2,6 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
 body { background-color: #f0f2f5; color: #333; }
 
-/* إضافة الصورة كخلفية ثابتة مع Blur خفيف */
 body::before {
     content: "";
     position: fixed;
@@ -11,17 +10,15 @@ body::before {
     width: calc(100vw + 20px); 
     height: calc(100vh + 20px);
     
-    /* ضع اسم صورتك هنا، تأكد من الامتداد (jpg أو png) */
     background-image: url('bg.jpg'); 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     
-    /* درجة التمويه (Blur) والشفافية */
-    filter: blur(4px); /* يمكنك زيادة أو تقليل الرقم حسب رغبتك */
-    opacity: 0.85; /* لجعل الخلفية هادئة ولا تزعج العين */
+    filter: blur(4px); 
+    opacity: 0.85; 
     
-    z-index: -1; /* لإبقاء الصورة خلف كل شيء */
+    z-index: -1; 
 }
 
 
@@ -55,7 +52,7 @@ body::before {
 
 /* Panels and Sections */
 .role-section { 
-    background: rgba(255, 255, 255, 0.95) !important; /* خلفية بيضاء شبه شفافة وأنيقة */
+    background: rgba(255, 255, 255, 0.95) !important; 
     padding: 25px; 
     border-radius: 10px;
     margin-bottom: 30px; 
@@ -76,7 +73,7 @@ body::before {
 .inline-form { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
 .inline-form input, .inline-form select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1; min-width: 150px; }
 
-/* Data Tables (Student Project standard) */
+/* Data Tables*/
 .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 .data-table th, .data-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
 .data-table th { background-color: #f8f9fa; font-weight: bold; }

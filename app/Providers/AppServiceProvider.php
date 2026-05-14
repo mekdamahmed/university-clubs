@@ -26,7 +26,6 @@ class AppServiceProvider extends ServiceProvider
      * Bootstrap any application services.
      */
         public function boot(): void{
-        // Give Admin full access to EVERYTHING (Super Admin)
         \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
             if ($user->is_admin) {
                 return true;

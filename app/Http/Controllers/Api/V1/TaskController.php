@@ -13,7 +13,6 @@ class TaskController extends Controller
 
     public function clubTasks($club_id)
     {
-        // الليدر يرى كل التاسكات وتاريخها وحالتها
         $tasks = Task::with('assignee')->where('club_id', $club_id)->orderBy('created_at', 'desc')->get();
         return $this->successResponse($tasks);
     }
@@ -25,7 +24,7 @@ class TaskController extends Controller
             'assigned_to' => 'required|exists:users,id',
             'title' => 'required', 
             'description' => 'required',
-            'due_date' => 'required|date' // New deadline validation
+            'due_date' => 'required|date' 
         ]);
         Task::create($request->all());
         return $this->successResponse(null, 'Task Assigned successfully');

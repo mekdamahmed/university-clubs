@@ -17,16 +17,14 @@ class User extends Authenticatable
 
     protected $casts = [
         'password' => 'hashed',
-        'is_admin' => 'boolean', // To easily check if user is admin
+        'is_admin' => 'boolean', 
     ];
 
-    // Clubs where this user is the leader
     public function ledClubs()
     {
         return $this->hasMany(Club::class, 'leader_id');
     }
 
-    // Clubs where this user is a member or applied to
     public function clubs()
     {
         return $this->belongsToMany(Club::class, 'club_user')
